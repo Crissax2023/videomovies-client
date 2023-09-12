@@ -1,0 +1,15 @@
+.listapeliculas-container {
+  margin-top: -20px;
+  padding: 16px; /* Ajusta el espaciado según tus preferencias */
+}
+
+.image-list {
+  width: 100%;
+}
+
+.alert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
