@@ -1,73 +1,130 @@
-import "./LoginPage.css";
-import { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState,useContext } from "react";
+//import axios from "axios";
+//import { API_URL } from "../../utils/constants";
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Grid,
+  Button,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Alert,
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/AssignmentInd';
+import "../VideosPage/Agregarpeliculas.css"; // Importa tus estilos CSS aquí
 import { AuthContext } from "../../context/auth.context";
 import authService from "../../services/auth.service";
 
-function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(undefined);
+const initLogInForm = {
+  email: '',
+  password: '',
+};
 
+const LogIn = (props) => {
+  const [LogInStateForm, setLogInForm] = useState(initLogInForm);
+const [errorMessage,setErrorMessage] = useState(undefined)
+
+  const {storeToken,authenticateUser} = useContext(AuthContext)
+   
   const navigate = useNavigate();
 
-  const { storeToken, authenticateUser } = useContext(AuthContext);
+  const handleLogInForm = (nameField, value) => {
+    setLogInForm((prevState) => ({
+      ...prevState,
+      [nameField]: value,
+    }));
+  };
 
-  const handleEmail = (e) => setEmail(e.target.value);
-  const handlePassword = (e) => setPassword(e.target.value);
-
-  const handleLoginSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const requestBody = { email, password };
+      try{
+          //const response = await axios.post(`${API_URL}/auth/login`,LogInStateForm)
+          const response = await authService.login(LogInStateForm) 
+          navigate('/peliculas')
 
-    // Send a request to the server using axios
-    /* 
-    axios.post(`${process.env.REACT_APP_SERVER_URL}/auth/login`)
-      .then((response) => {})
-    */
+          storeToken(response.data.authToken); 
+          authenticateUser();
+        } catch (error) {
+          const errorDescription = error.response.data.message;
+          setErrorMessage(errorDescription);
+        }
+  };
 
-    // Or using a service
-    authService
-      .login(requestBody)
-      .then((response) => {
-        // If the POST request is successful store the authentication token,
-        // after the token is stored authenticate the user
-        // and at last navigate to the home page
-        storeToken(response.data.authToken);
-        authenticateUser();
-        navigate("/");
-      })
-      .catch((error) => {
-        // If the request resolves with an error, set the error message in the state
-        const errorDescription = error.response.data.message;
-        setErrorMessage(errorDescription);
-      });
+  const cardStyle = {
+    minWidth: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+    marginTop: '2%', // Separación de la parte superior
+    marginLeft: '200px', // Espacio en el lado izquierdo
+    marginRight: '200px', // Espacio en el lado derecho
   };
 
   return (
-    <div className="LoginPage">
-      <h1>Login</h1>
+    <div className="agregar-peliculas-container">
+            {
+            errorMessage && 
+            <Alert severity="success" color="warning">
+              {errorMessage}
+            </Alert>
+            }
+      <form onSubmit={handleSubmit}>
+        <Card sx={cardStyle}>
+          <CardContent>
+            <Typography variant="h5" component="div" className="title-style">
+              LogIn
+            </Typography>
+            <br />
 
-      <form onSubmit={handleLoginSubmit}>
-        <label>Email:</label>
-        <input type="email" name="email" value={email} onChange={handleEmail} />
+            <Grid container spacing={3}>
 
-        <label>Password:</label>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={handlePassword}
-        />
-
-        <button type="submit">Login</button>
+              <Grid item xs={12}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="year-input">Correo</InputLabel>
+                  <OutlinedInput
+                    id="email-input"
+                    label="Correo"
+                    name="email"
+                    value={LogInStateForm.email}
+                    onChange={(e) => handleLogInForm('email', e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="director-input">Contraseña</InputLabel>
+                  <OutlinedInput
+                    id="Password-input"
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={LogInStateForm.password}
+                    onChange={(e) => handleLogInForm('password', e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          </CardContent>
+          <CardActions>
+            <Grid container justifyContent="center" xs={11.9}>
+              <Button variant="contained" type="submit" endIcon={<SendIcon />}>
+                LogIn
+              </Button>
+            </Grid>
+          </CardActions>
+        </Card>
       </form>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-      <p>Don't have an account yet?</p>
-      <Link to={"/signup"}> Sign Up</Link>
+      <br></br>
+      <Alert severity="success" color="info">
+            Si no tienes una cuenta registrate <Link to={'/signup'}>aqui</Link> 
+      </Alert>
+      <br>
+      </br>
     </div>
   );
-}
+};
 
-export default LoginPage;
+export default LogIn;

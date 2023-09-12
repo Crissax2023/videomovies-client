@@ -1,0 +1,83 @@
+body {
+    background-image: url('../../../public/Fondo_movies.avif');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  .contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 89.5vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+  }
+
+  
+  .centrar {
+    margin-top: -110px;
+    width: 90%;
+    height: 90%;
+    color: white;     
+  }
+
+  
+.titulo {
+    font-size: 36px;
+    margin: 0;
+  }
+  
+  .subtitulo {
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .descripcion {
+    font-size: 18px;
+    margin: 20px 0;
+  }
+  .moving-div {
+    width: 100px;
+    height: 80px;
+    background-image: url('../../../public/palomita.png'); /* Ruta a tu imagen de fondo */
+    background-size: cover; /* Ajustar la imagen para cubrir el div */
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 100%; /* Inicialmente colocado debajo del static-div */
+    left: 15%;
+    transform: translateX(-50%);
+    animation: moveVertical 5s infinite alternate;
+}
+
+@keyframes moveVertical {
+    0% {
+        top: 80%;
+    }
+    100% {
+        top: 15%;
+    }
+}
+
+
+
+.moving-div2 {
+    width: 55px;
+    height: 55px;
+    background-image: url('../../../public/palomita.png'); /* Ruta a tu imagen de fondo */
+    background-size: auto 60px; /* Establecer el tamaño de repetición vertical (50px en este ejemplo) */
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 100%; /* Inicialmente colocado debajo del static-div */
+    left: 80%;
+    transform: translateX(-50%);
+    animation: moveVertical2 6s infinite alternate;
+}
+
+@keyframes moveVertical2 {
+    0% {
+        top: 80%;
+    }
+    100% {
+        top: 15%;
+    }
+}

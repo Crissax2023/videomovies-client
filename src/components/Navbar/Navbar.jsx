@@ -1,46 +1,262 @@
-import "./Navbar.css";
-import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../../context/auth.context";
+import React, { useState , useContext} from 'react';
+import { Link } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import AdbIcon from '@mui/icons-material/Theaters';
+import { createTheme } from '@mui/material/styles';
+import { AuthContext } from '../../context/auth.context';
 
-function Navbar() {
-  // Subscribe to the AuthContext to gain access to
-  // the values from AuthContext.Provider's `value` prop
-  const { isLoggedIn, user, logOutUser } = useContext(AuthContext);
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1a237e',
+    },
+    secondary: {
+      main: '#E0C2FF',
+      light: '#F5EBFF',
+      contrastText: '#47008F',
+    },
+  },
+});
+
+
+
+const Navbar = () => {
+
+  const {isLoggedIn,user,logout} = useContext(AuthContext)
+
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+
 
   return (
-    <nav>
-      <Link to="/">
-        <button>Home</button>
-      </Link>
+    <AppBar position="static" theme={theme}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <Typography
+            variant="h6"
+            noWrap
+            component={Link}
+            to="/"
+            sx={{
+              mr: 2,
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            VideoApp
+          </Typography>
 
-      {isLoggedIn && (
-        <>
-          <button onClick={logOutUser}>Logout</button>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+              }}
+            >
+                <MenuItem key='/'>
+                  <Link to='/'>
+                    <Button sx={{ my: 2, color: 'black', display: 'block' }}>
+                      Inicio
+                    </Button>
+                  </Link>
+                </MenuItem>
+                {
+              isLoggedIn &&
+               (
+                <>
+                <MenuItem key='/peliculas'>
+                  <Link to='/peliculas'>
+                    <Button sx={{ my: 2, color: 'black', display: 'block' }}>
+                      Peliculas
+                    </Button>
+                  </Link>
+                </MenuItem>
 
-          <Link to="/profile">
-            <button>Profile</button>
-            {/* <img src="https://picsum.photos/id/402/200/300" style={{ width: 50, height: 50, borderRadius: 25}} alt="profile" /> */}
-          </Link>
+                <MenuItem key='/add-peliculas'>
+                  <Link to='/add-peliculas'>
+                    <Button sx={{ my: 2, color: 'black', display: 'block' }}>
+                      Agregar
+                    </Button>
+                  </Link>
+                </MenuItem>
+                </>
+             )
+                }
+            </Menu>
+          </Box>
+          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <Typography
+            variant="h5"
+            noWrap
+            component={Link}
+            to="/"
+            sx={{
+              mr: 2,
+              display: { xs: 'flex', md: 'none' },
+              flexGrow: 1,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            Videoapp
+          </Typography>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            
+              <Link to='/' key='/'>
+                <Button sx={{ my: 2, color: 'white', display: 'block' }}>
+                 Inicio
+                </Button>
+              </Link>
 
-          <span>{user && user.name}</span>
-        </>
-      )}
+            {
+              isLoggedIn &&
+               (
+                <>
+              <Link to='/peliculas' key='/peliculas'>
+                <Button sx={{ my: 2, color: 'white', display: 'block' }}>
+                 Peliculas
+                </Button>
+              </Link>
 
-      {!isLoggedIn && (
-        <>
-          <Link to="/signup">
-            {" "}
-            <button>Sign Up</button>{" "}
-          </Link>
-          <Link to="/login">
-            {" "}
-            <button>Login</button>{" "}
-          </Link>
-        </>
-      )}
-    </nav>
+              <Link to='/add-peliculas' key='/add-peliculas'>
+                <Button sx={{ my: 2, color: 'white', display: 'block' }}>
+                 Agregar
+                </Button>
+              </Link>
+               </>
+              )
+            }
+             
+          </Box>
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Sub Menú">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar src="/broken-image.jpg" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+                {
+                  !isLoggedIn && 
+                  (
+                  <>
+                  <Link to='/signup'>
+
+                    <MenuItem key='/signup' onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">Signup</Typography>
+                    </MenuItem>
+  
+                  </Link>
+                  <Link to='/login'>
+
+                    <MenuItem key='/login' onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">Login</Typography>
+                    </MenuItem>
+  
+                  </Link>
+                  </>
+                  )
+                }
+
+                {
+              isLoggedIn &&
+                (
+                  <>
+                   <MenuItem key='/'  >
+                      <Typography textAlign="center">{ user && user.name}</Typography>
+                    </MenuItem>
+                  <Link to='/'>
+
+                    <MenuItem key='/'  onClick={(logout)}>
+                      <Typography textAlign="center">Logout</Typography>
+                    </MenuItem>
+
+                  </Link>
+                  </>
+                )
+               }
+
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
-}
+};
 
 export default Navbar;
+

@@ -1,78 +1,143 @@
-import "./SignupPage.css";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+//import axios from "axios";
 import authService from "../../services/auth.service";
+//import { API_URL } from "../../utils/constants";
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Grid,
+  Button,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Alert
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/AssignmentInd';
+import "../VideosPage/Agregarpeliculas.css"; // Importa tus estilos CSS aquí
 
-function SignupPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [errorMessage, setErrorMessage] = useState(undefined);
+const initSignupForm = {
+  name: '',
+  email: '',
+  password: '',
+};
+
+const Signup = (props) => {
+  const [SignupStateForm, setSignupForm] = useState(initSignupForm);
+
+  const [errorMessage,setErrorMessage] = useState(undefined)
 
   const navigate = useNavigate();
 
-  const handleEmail = (e) => setEmail(e.target.value);
-  const handlePassword = (e) => setPassword(e.target.value);
-  const handleName = (e) => setName(e.target.value);
+  const handleSignupForm = (nameField, value) => {
+    setSignupForm((prevState) => ({
+      ...prevState,
+      [nameField]: value,
+    }));
+  };
 
-  const handleSignupSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Create an object representing the request body
-    const requestBody = { email, password, name };
 
-    // Send a request to the server using axios
-    /* 
-    const authToken = localStorage.getItem("authToken");
-    axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/auth/signup`, 
-      requestBody, 
-      { headers: { Authorization: `Bearer ${authToken}` },
-    })
-    .then((response) => {})
-    */
+    try {
+      //await axios.post(`${API_URL}/auth/signup`, SignupStateForm)
+      //const response = 
+      await authService.signup(SignupStateForm)
+      navigate('/login')
+    } catch (error) {
+      setErrorMessage(error.response.data.message);
+    }
 
-    // Or using a service
-    authService
-      .signup(requestBody)
-      .then((response) => {
-        // If the POST request is successful redirect to the login page
-        navigate("/login");
-      })
-      .catch((error) => {
-        // If the request resolves with an error, set the error message in the state
-        const errorDescription = error.response.data.message;
-        setErrorMessage(errorDescription);
-      });
+
+  };
+
+  const cardStyle = {
+    minWidth: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+    marginTop: '2%', // Separación de la parte superior
+    marginLeft: '200px', // Espacio en el lado izquierdo
+    marginRight: '200px', // Espacio en el lado derecho
   };
 
   return (
-    <div className="SignupPage">
-      <h1>Sign Up</h1>
+    <div className="agregar-peliculas-container">
 
-      <form onSubmit={handleSignupSubmit}>
-        <label>Email:</label>
-        <input type="email" name="email" value={email} onChange={handleEmail} />
+      {
+      errorMessage && 
+      <Alert severity="success" color="warning">
+        {errorMessage}
+      </Alert>
+      }
 
-        <label>Password:</label>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={handlePassword}
-        />
+      
+      <form onSubmit={handleSubmit}>
+        <Card sx={cardStyle}>
+          <CardContent>
+            <Typography variant="h5" component="div" className="title-style">
+              SignUp
+            </Typography>
+            <br />
 
-        <label>Name:</label>
-        <input type="text" name="name" value={name} onChange={handleName} />
-
-        <button type="submit">Sign Up</button>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="title-input">Name</InputLabel>
+                  <OutlinedInput
+                    id="Name"
+                    label="name"
+                    name="name"
+                    value={SignupStateForm.name}
+                    onChange={(e) => handleSignupForm('name', e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="year-input">Correo</InputLabel>
+                  <OutlinedInput
+                    id="email-input"
+                    label="Correo"
+                    name="email"
+                    value={SignupStateForm.email}
+                    onChange={(e) => handleSignupForm('email', e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="director-input">Contraseña</InputLabel>
+                  <OutlinedInput
+                    id="Password-input"
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={SignupStateForm.password}
+                    onChange={(e) => handleSignupForm('password', e.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          </CardContent>
+          <CardActions>
+            <Grid container justifyContent="center" xs={11.9}>
+              <Button variant="contained" type="submit" endIcon={<SendIcon />}>
+                SignUp
+              </Button>
+            </Grid>
+          </CardActions>
+        </Card>
       </form>
-
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-      <p>Already have account?</p>
-      <Link to={"/login"}> Login</Link>
+      <br></br>
+      <Alert severity="success" color="info">
+            Si ya cuentas con una cuenta logueate <Link to={'/login'}>aqui</Link> 
+      </Alert>
+      <br>
+      </br>
     </div>
   );
-}
+};
 
-export default SignupPage;
+export default Signup;
